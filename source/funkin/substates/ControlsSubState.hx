@@ -1,4 +1,4 @@
-package;
+package funkin.substates;
 
 import flixel.FlxSprite;
 import flixel.FlxSubState;

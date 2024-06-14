@@ -1,4 +1,4 @@
-package;
+package funkin.states;
 
 import Controls.KeyboardScheme;
 import flixel.FlxG;

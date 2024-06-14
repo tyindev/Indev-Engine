@@ -1,3 +1,5 @@
+package funkin.states;
+
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;

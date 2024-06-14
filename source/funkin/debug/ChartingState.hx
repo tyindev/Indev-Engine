@@ -1,4 +1,4 @@
-package;
+package funkin.debug;
 
 import flixel.addons.ui.FlxUIText;
 import haxe.zip.Writer;

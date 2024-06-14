@@ -1,4 +1,4 @@
-package;
+package funkin.states;
 
 import flash.text.TextField;
 import flixel.FlxG;

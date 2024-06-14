@@ -1,4 +1,4 @@
-package;
+package funkin.substates;
 
 import Controls.Control;
 import flixel.FlxG;

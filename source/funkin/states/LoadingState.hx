@@ -1,4 +1,4 @@
-package;
+package funkin.states;
 
 import lime.app.Promise;
 import lime.app.Future;

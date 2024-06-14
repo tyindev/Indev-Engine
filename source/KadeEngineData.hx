@@ -1,3 +1,5 @@
+package;
+
 import openfl.Lib;
 import flixel.FlxG;
 

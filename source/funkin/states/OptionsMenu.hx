@@ -1,4 +1,4 @@
-package;
+package funkin.states;
 
 import openfl.Lib;
 import Options;
