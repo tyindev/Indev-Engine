@@ -9,6 +9,7 @@ typedef SwagSection =
 	var bpm:Int;
 	var changeBPM:Bool;
 	var altAnim:Bool;
+	var sectionBeats:Float;
 }
 
 class Section
@@ -18,6 +19,7 @@ class Section
 	public var lengthInSteps:Int = 16;
 	public var typeOfSection:Int = 0;
 	public var mustHitSection:Bool = true;
+	public var sectionBeats:Float = 4;
 
 	/**
 	 *	Copies the first section into the second section!
