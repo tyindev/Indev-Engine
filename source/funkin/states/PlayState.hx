@@ -173,17 +173,23 @@ class PlayState extends MusicBeatState
 	public static var timeCurrently:Float = 0;
 	public static var timeCurrentlyR:Float = 0;
 
+	// INDEV
+	public static var STRUM_X = 42;
+	public static var STRUM_X_MIDDLESCROLL = -278;
+	private var updateTime:Bool = true;
+	public static var instance:PlayState;
+	var songPercent:Float = 0;
+	public static var noteOffset:Int = 0;
+	// hud
+	var timeTxt:FlxText;
+	
+
 	override public function create()
 	{
-
-		if (FlxG.save.data.etternaMode)
-			Conductor.safeFrames = 5; // 116ms hit window (j3-4)
-		else
-			Conductor.safeFrames = 10; // 166ms hit window (j1)
-
-
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+
+		instance = this;
 
 		sicks = 0;
 		bads = 0;
@@ -416,30 +422,6 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
-			{
-				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
-				if (FlxG.save.data.downscroll)
-					songPosBG.y = FlxG.height * 0.9 + 45; 
-				songPosBG.screenCenter(X);
-				songPosBG.scrollFactor.set();
-				add(songPosBG);
-				
-				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-					'songPositionBar', 0, 90000);
-				songPosBar.scrollFactor.set();
-				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
-				add(songPosBar);
-	
-				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
-				if (FlxG.save.data.downscroll)
-					songName.y -= 3;
-				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-				songName.scrollFactor.set();
-				add(songName);
-				songName.cameras = [camHUD];
-			}
-
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		if (FlxG.save.data.downscroll)
 			healthBarBG.y = 50;
@@ -462,6 +444,15 @@ class PlayState extends MusicBeatState
 		if (offsetTesting)
 			scoreTxt.x += 300;
 		add(scoreTxt);
+
+		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
+		timeTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timeTxt.scrollFactor.set();
+		timeTxt.alpha = 0;
+		timeTxt.borderSize = 2;
+		timeTxt.visible = true;
+		add(timeTxt);
+		updateTime = true;
 
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
 		replayTxt.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -486,12 +477,8 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		if (FlxG.save.data.songPosition)
-		{
-			songPosBG.cameras = [camHUD];
-			songPosBar.cameras = [camHUD];
-		}
 		if (loadRep)
 			replayTxt.cameras = [camHUD];
 		// if (SONG.song == 'South')
@@ -758,44 +745,10 @@ class PlayState extends MusicBeatState
 
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
-
-		if (FlxG.save.data.songPosition)
-			{
-				remove(songPosBG);
-				remove(songPosBar);
-				remove(songName);
-
-				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
-				if (FlxG.save.data.downscroll)
-					songPosBG.y = FlxG.height * 0.9 + 45; 
-				songPosBG.screenCenter(X);
-				songPosBG.scrollFactor.set();
-				add(songPosBG);
-
-				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-					'songPositionBar', 0, songLength - 1000);
-				songPosBar.numDivisions = 1000;
-				songPosBar.scrollFactor.set();
-				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
-				add(songPosBar);
-	
-				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
-				if (FlxG.save.data.downscroll)
-					songName.y -= 3;
-				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-				songName.scrollFactor.set();
-				add(songName);
-
-				songPosBG.cameras = [camHUD];
-				songPosBar.cameras = [camHUD];
-				songName.cameras = [camHUD];
-			}
+		FlxTween.tween(timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
 		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
-
-
-
 		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 		#end
 	}
@@ -1218,14 +1171,6 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		if (FlxG.keys.justPressed.SEVEN)
-		{
-			#if desktop
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-			#end
-			FlxG.switchState(new ChartingState());
-		}
-
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
@@ -1293,6 +1238,17 @@ class PlayState extends MusicBeatState
 					// Conductor.songPosition += FlxG.elapsed * 1000;
 					// trace('MISSED FRAME');
 				}
+
+				if(updateTime) {
+					var curTime:Float = Conductor.songPosition - noteOffset;
+					if(curTime < 0) curTime = 0;
+					songPercent = (curTime / songLength);
+
+					var songCalc:Float = (songLength - curTime);
+					var secondsTotal:Int = Math.floor(songCalc / 1000);
+					if(secondsTotal < 0) secondsTotal = 0;
+					timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+				}				
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
@@ -1531,6 +1487,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		updateTime = false;
 		if (!loadRep)
 			rep.SaveReplay();
 
