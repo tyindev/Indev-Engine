@@ -10,8 +10,11 @@ import funkin.states.PlayState;
 import funkin.states.TitleState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxColor;
+#if desktop
+import Discord.DiscordClient;
+#end
 
-class Results extends FlxState
+class Results extends MusicBeatState
 {
 	public var background:FlxSprite;
 	public var text:FlxText;
@@ -32,9 +35,33 @@ class Results extends FlxState
 	public var badText:FlxText; 
 	public var shitText:FlxText; 
 	public var missText:FlxText; 
+    // DIFFERENT ENDINGS/ANIMS HANDLER
+    var resultsversions:EndingVers;
 
 	override function create()
 	{
+        if (goods == 0 && bads == 0 && shits == 0 && missess == 0) {
+            resultsversions = PFC;
+            trace("Holy shit a PFC!");
+        } else if (bads == 0 && shits == 0 && missess == 0) {
+            resultsversions = PERFECT;
+            trace("Holy shit a PERFECT!");
+        } else if (bads >= 15 && shits >= 15 && missess >= 15) {
+            resultsversions = SHIT;
+            trace("Aw man, you'll get it next time!");
+        } else {
+            resultsversions = NORMAL;
+            trace("Stay normal!");
+        }
+           
+		//FlxG.sound.playMusic(Paths.music("results" + resultsversions));
+
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("Viewing the results!", null);
+		#end
+
+
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('results/resultsboard'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
@@ -96,27 +123,33 @@ class Results extends FlxState
 		var textWidth:Float = 240;
 		var centerX:Float = (screenWidth - textWidth) / 2;
 
-        // CODE PULLED FROM FUNKIN.JS BUT ALSO MODIFIED TO ACTUALLY WORK.
-        var gf = new FlxSprite(625, 325);
-        gf.frames = Paths.getSparrowAtlas('results/resultGirlfriendGOOD');
-		gf.animation.addByPrefix('clap', 'Girlfriend Good Anim', 24, false);
-		gf.visible = true;
-        gf.animation.play('clap');
-		gf.animation.finishCallback = function(name:String)
+        switch (resultsversions)
         {
-			gf.animation.play('clap', true, false, 9);
-		};
-		this.add(gf);
-        var boyfriend = new FlxSprite(640, -200);
-		boyfriend.frames = Paths.getSparrowAtlas('results/resultBoyfriendGOOD');
-		boyfriend.animation.addByPrefix('fall', 'Boyfriend Good Anim0', 24, false);
-		boyfriend.visible = true;
-        boyfriend.animation.play('fall');
-		boyfriend.animation.finishCallback = function(name:String)
-        {
-			boyfriend.animation.play('fall', true, false, 14);
-		};
-		this.add(boyfriend);
+            // TODO: Add the other anims              
+            default:
+                // CODE PULLED FROM FUNKIN.JS BUT ALSO MODIFIED TO ACTUALLY WORK.
+                var gf = new FlxSprite(625, 325);
+                gf.frames = Paths.getSparrowAtlas('results/resultGirlfriendGOOD');
+                gf.animation.addByPrefix('clap', 'Girlfriend Good Anim', 24, false);
+                gf.visible = true;
+                gf.animation.play('clap');
+                gf.animation.finishCallback = function(name:String)
+                {
+                    gf.animation.play('clap', true, false, 9);
+                };
+                this.add(gf);
+
+                var boyfriend = new FlxSprite(640, -200);
+                boyfriend.frames = Paths.getSparrowAtlas('results/resultBoyfriendGOOD');
+                boyfriend.animation.addByPrefix('fall', 'Boyfriend Good Anim0', 24, false);
+                boyfriend.visible = true;
+                boyfriend.animation.play('fall');
+                boyfriend.animation.finishCallback = function(name:String)
+                {
+                    boyfriend.animation.play('fall', true, false, 14);
+                };
+                this.add(boyfriend);
+        }    
 
         if (!PlayState.isStoryMode)
 		    text = new FlxText(centerX, 150, 0, "Song Complete!");
@@ -153,4 +186,12 @@ class Results extends FlxState
 		}
 		super.update(elapsed);
 	}
+}
+
+enum abstract EndingVers(String)
+{
+    var PFC;
+	var PERFECT;
+	var NORMAL;
+	var SHIT;
 }

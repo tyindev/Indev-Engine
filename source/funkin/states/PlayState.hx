@@ -1126,6 +1126,11 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		if (FlxG.keys.justPressed.EIGHT)
+		{
+			LoadingState.loadAndSwitchState(new funkin.states.Results(), true);
+		}
+
 		switch (curStage)
 		{
 			case 'philly':
