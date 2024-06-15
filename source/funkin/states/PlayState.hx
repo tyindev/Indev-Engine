@@ -153,7 +153,7 @@ class PlayState extends MusicBeatState
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
-	var songScore:Int = 0;
+	public var songScore:Int = 0;
 	var scoreTxt:FlxText;
 	var replayTxt:FlxText;
 
@@ -182,7 +182,12 @@ class PlayState extends MusicBeatState
 	public static var noteOffset:Int = 0;
 	// hud
 	var timeTxt:FlxText;
-	
+	// RESULTS SHIT
+	public static var storyMisses:Int = 0;
+	public static var storySicks:Int = 0;
+	public static var storyGoods:Int = 0;
+	public static var storyBads:Int = 0;
+	public static var storyShits:Int = 0;
 
 	override public function create()
 	{
@@ -1523,7 +1528,7 @@ class PlayState extends MusicBeatState
 					transIn = FlxTransitionableState.defaultTransIn;
 					transOut = FlxTransitionableState.defaultTransOut;
 
-					FlxG.switchState(new StoryMenuState());
+					FlxG.switchState(new Results());
 
 					// if ()
 					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -1573,7 +1578,7 @@ class PlayState extends MusicBeatState
 			else
 			{
 				trace('WENT BACK TO FREEPLAY??');
-				FlxG.switchState(new FreeplayState());
+				FlxG.switchState(new Results());
 			}
 		}
 	}
@@ -1619,12 +1624,22 @@ class PlayState extends MusicBeatState
 					health -= 0.2;
 					ss = false;
 					shits++;
+					if (isStoryMode)
+					{
+						campaignScore += Math.round(songScore);
+						storyShits += shits;
+					}
 				case 'bad':
 					daRating = 'bad';
 					score = 0;
 					health -= 0.06;
 					ss = false;
 					bads++;
+					if (isStoryMode)
+					{
+						campaignScore += Math.round(songScore);
+						storyBads += bads;
+					}
 				case 'good':
 					daRating = 'good';
 					score = 200;
@@ -1632,10 +1647,20 @@ class PlayState extends MusicBeatState
 					goods++;
 					if (health < 2)
 						health += 0.04;
+					if (isStoryMode)
+					{
+						campaignScore += Math.round(songScore);
+						storyGoods += goods;
+					}	
 				case 'sick':
 					if (health < 2)
 						health += 0.1;
 					sicks++;
+					if (isStoryMode)
+					{
+						campaignScore += Math.round(songScore);
+						storySicks += sicks;
+					}
 			}
 
 			if (FlxG.save.data.etternaMode)
