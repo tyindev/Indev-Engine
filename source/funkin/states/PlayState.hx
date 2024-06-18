@@ -1103,6 +1103,11 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			FlxG.switchState(new funkin.debug.ChartingState());
+		}
+
 		if (currentFrames == FlxG.save.data.fpsCap)
 		{
 			for(i in 0...notesHitArray.length)

@@ -988,9 +988,10 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	private function addSection(lengthInSteps:Int = 16):Void
+	private function addSection(lengthInSteps:Int = 16, sectionBeats:Float = 4):Void
 	{
 		var sec:SwagSection = {
+			sectionBeats: sectionBeats,
 			lengthInSteps: lengthInSteps,
 			bpm: _song.bpm,
 			changeBPM: false,
